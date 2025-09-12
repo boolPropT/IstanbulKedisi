@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Kedi
+  - Marti
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Kedi
+  - Marti
+  - KediMermisi
+  - MartiMermisi
+  - Yer
+  - Ganimet
+  - Sinir
+  - FonObjeleri
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Arkaplan
+    uniqueID: 84189553
+    locked: 0
+  - name: Karakterler
+    uniqueID: 1420166723
+    locked: 0
+  - name: FonObjeleri
+    uniqueID: 1446092567
+    locked: 0
+  - name: Ganimet
+    uniqueID: 3539279929
+    locked: 0
+  - name: Mermiler
+    uniqueID: 4125354029
+    locked: 0
+  - name: UcanKarakterler
+    uniqueID: 2724173123
+    locked: 0
+  - name: KullaniciArayuzu
+    uniqueID: 3748411553
+    locked: 0
