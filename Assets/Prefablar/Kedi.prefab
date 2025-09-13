@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 8069491775008160061}
   - component: {fileID: 8705748751784777756}
   - component: {fileID: 6222056184746238213}
+  - component: {fileID: 8274828535837980447}
   m_Layer: 8
   m_Name: Kedi
   m_TagString: Kedi
@@ -212,3 +213,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   can: 10
   dokunulmazlikSuresi: 0.5
+--- !u!114 &8274828535837980447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8885513769965694905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d140d711c29b504b9fe2cac6edf9c78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tus: 32
+  superCharges: 0
+  yaricap: 7.5
+  hasar: 50
+  dusmanKatmani:
+    serializedVersion: 2
+    m_Bits: 512
+  ucanlariUcur: 1
+  vfx: {fileID: 0}

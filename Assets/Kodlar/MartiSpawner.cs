@@ -22,10 +22,35 @@ public class MartiSpawner : MonoBehaviour
     int aktifDusman;
     float anlikAralik;
 
+    public bool autoStart = true;       // Inspector’dan kapatýlabilir
+    Coroutine cr;                       // aktif coroutine
+
     void Start()
     {
         anlikAralik = baslangicAralik;
-        StartCoroutine(Akisi());
+        if (autoStart)
+            StartSpawning();            // ESKÝ: StartCoroutine(Akisi()); yerine
+    }
+
+    public void StartSpawning()
+    {
+        if (cr != null) StopCoroutine(cr);
+        cr = StartCoroutine(Akisi());
+    }
+
+    public void StopSpawning()
+    {
+        if (cr != null)
+        {
+            StopCoroutine(cr);
+            cr = null;
+        }
+    }
+
+    //WaveManager dýþarýdan “x adet” istemek isterse
+    public void Spawn(int adet = 1)
+    {
+        for (int i = 0; i < adet; i++) Spawnla();
     }
 
     IEnumerator Akisi()

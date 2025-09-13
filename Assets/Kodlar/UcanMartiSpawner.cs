@@ -13,6 +13,8 @@ public class UcanMartiSpawner : MonoBehaviour
     public float padYWorld = 0.10f;
 
     Camera cam;
+    
+    public bool aktif = false;     // Inspector’dan veya koddan aç/kapat
     float sayac;
 
     void Awake()
@@ -29,12 +31,37 @@ public class UcanMartiSpawner : MonoBehaviour
 
     void Update()
     {
+        if (!aktif) return;        // çalýþmasýn
         sayac -= Time.deltaTime;
         if (sayac <= 0f)
         {
             Spawn();
             sayac = Random.Range(sureMin, sureMax);
         }
+
+        sayac -= Time.deltaTime;
+        if (sayac <= 0f)
+        {
+            Spawn();
+            sayac = Random.Range(sureMin, sureMax);
+        }
+    }
+
+    //WaveManager çaðýrabilsin
+    public void StartSpawning()
+    {
+        aktif = true;
+        sayac = Random.Range(sureMin, sureMax);
+    }
+
+    public void StopSpawning()
+    {
+        aktif = false;
+    }
+
+    public void SpawnN(int adet = 1)
+    {
+        for (int i = 0; i < adet; i++) Spawn();
     }
 
     void Spawn()
@@ -82,7 +109,7 @@ public class UcanMartiSpawner : MonoBehaviour
         float spawnY = topY - padYWorld;
 
         // 4) Geçici konumda doður
-        Vector3 world = new Vector3(spawnX, spawnY, 0f);
+        Vector3 world = new(spawnX, spawnY, 0f);
         var go = Instantiate(martiPrefab, world, Quaternion.identity);
 
         // 5) Sprite’ýn GERÇEK boyuna göre tamamen ÝÇERÝ al
