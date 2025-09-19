@@ -199,6 +199,8 @@ MonoBehaviour:
   atisNoktasi: {fileID: 2200384364328011126}
   atisCikisMesafesi: 0.55
   mermiPrefab: {fileID: 1652992650059981097, guid: 3341d114b50b38e4b8168ffd0192248b, type: 3}
+  sfxAtesEt: {fileID: 8300000, guid: ee1ac1d86bab8e1468491bcbf27f099a, type: 3}
+  sfxSes: 0.5
 --- !u!114 &6222056184746238213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,8 +213,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e67522bebcb565c4a87b09b6350d07f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  can: 10
+  can: 20
+  maxCan: 20
   dokunulmazlikSuresi: 0.5
+  sfxHasarAl: {fileID: 8300000, guid: 05b4431ed24bbce45bd0f81a983abfa9, type: 3}
+  sfxSes: 0.8
 --- !u!114 &8274828535837980447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,4 +238,63 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   ucanlariUcur: 1
-  vfx: {fileID: 0}
+  simitHalkaSprite: {fileID: 21300000, guid: e0e3a9f9d56e00f4b9fcbfb702359dd3, type: 3}
+  simitRenk: {r: 1, g: 1, b: 1, a: 0.54901963}
+  vfxSure: 0.35
+  vfxOlcekEgrisi:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.2
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1.4
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  vfxAlfaEgrisi:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.8
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  vfxSortingLayer: Mermiler
+  vfxSortingOrder: 500
+  vfxMaterial: {fileID: 0}
+  vfxUnscaledTime: 1
+  sfxPatlama: {fileID: 8300000, guid: 81bfa28a0b4799b4bae07ba30ff6f031, type: 3}
+  sfxSes: 0.8
+  ipucuText: {fileID: 0}
+  ipucuMetni: "Simit Bombas\u0131 (Space)"
+  ipucuUnscaled: 1

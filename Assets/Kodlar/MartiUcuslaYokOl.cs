@@ -17,6 +17,11 @@ public class MartiUcuslaYokOl : MonoBehaviour
     public Camera hedefKamera;   // Boþ býrakýrsan otomatik Camera.main alýnýr
     public float yokEtmeDisMarj = 0.05f; // Bir týk tampon
 
+    [Header("Ses")]
+    public AudioClip sfxUcuslaYokOl;     // short "puff" sound
+    public float sfxSes = 0.8f;
+    AudioSource asrc;
+
     private bool kaciyor;
     private Rigidbody2D rb;
     private SpriteRenderer sr;
@@ -28,6 +33,11 @@ public class MartiUcuslaYokOl : MonoBehaviour
 
     void Awake()
     {
+        asrc = GetComponent<AudioSource>();
+        if (!asrc) asrc = gameObject.AddComponent<AudioSource>();
+        asrc.playOnAwake = false;
+        asrc.spatialBlend = 0f;
+
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         cols = GetComponentsInChildren<Collider2D>(includeInactive: true);
@@ -105,6 +115,8 @@ public class MartiUcuslaYokOl : MonoBehaviour
 
         // Sabit hýzda kaçmaya baþla
         if (rb != null) rb.velocity = gercekUcusYonu * ucusHizi;
+
+        PlaySFX();
     }
 
     void Update()
@@ -136,5 +148,11 @@ public class MartiUcuslaYokOl : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    void PlaySFX()
+    {
+        if (sfxUcuslaYokOl && asrc)
+            asrc.PlayOneShot(sfxUcuslaYokOl, sfxSes);
     }
 }

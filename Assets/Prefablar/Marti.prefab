@@ -221,7 +221,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62a2a604404d4be4784178c1609083ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canPuani: 3
+  sfxCanAl: {fileID: 8300000, guid: 67fa66f02cb22b54db426cf28306864a, type: 3}
+  sfxSes: 0.8
+  canPuani: 1
 --- !u!114 &453409621826524516
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -273,6 +275,8 @@ MonoBehaviour:
   - MartiUcuslaYokOl
   hedefKamera: {fileID: 0}
   yokEtmeDisMarj: 0.05
+  sfxUcuslaYokOl: {fileID: 8300000, guid: 1d6cb279b44097447af3907372b322e5, type: 3}
+  sfxSes: 0.8
 --- !u!222 &4163273126898859931
 CanvasRenderer:
   m_ObjectHideFlags: 0

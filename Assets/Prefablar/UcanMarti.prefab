@@ -107,6 +107,13 @@ MonoBehaviour:
   hizEsigiBirak: 0.4
   sadeceBirKereBirak: 1
   spriteSagPozitifScale: 1
+  hedefKamera: {fileID: 0}
+  killMarginWorld: 2
+  disaridaykenYokEtGecikmesi: 0.15
+  killIfExitedWithoutDrop: 1
+  azamiYasam: 20
+  sfxKakaBirak: {fileID: 8300000, guid: 9651e417e73337c4692c5c5152b908d1, type: 3}
+  sfxSes: 0.8
 --- !u!1 &1887641570101232322
 GameObject:
   m_ObjectHideFlags: 0

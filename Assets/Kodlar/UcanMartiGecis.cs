@@ -40,6 +40,11 @@ public class UcanMartiGecis : MonoBehaviour
     [Header("Emniyet")]
     public float azamiYasam = 20f;              // En fazla bu kadar yaþasýn
 
+    [Header("Ses")]
+    public AudioClip sfxKakaBirak;     // short "puff" sound
+    public float sfxSes = 0.8f;
+    AudioSource asrc;
+
     // ------------------------------------------------
     // Ýç durum
     // ------------------------------------------------
@@ -54,6 +59,11 @@ public class UcanMartiGecis : MonoBehaviour
 
     void Awake()
     {
+        asrc = GetComponent<AudioSource>();
+        if (!asrc) asrc = gameObject.AddComponent<AudioSource>();
+        asrc.playOnAwake = false;
+        asrc.spatialBlend = 0f;
+
         cam = Camera.main;
         if (!hedefKamera) hedefKamera = Camera.main;
 
@@ -169,7 +179,15 @@ public class UcanMartiGecis : MonoBehaviour
         // en az bir kez drop iþaretini koy
         dropYapti = true;
 
+        PlaySFX();
+
         // KakaDusTopDown kullanýyorsun; ayarlarý prefab’tan geliyor.
         // Gerekirse drift vb. burada ince ayar yapýlabilir.
+    }
+
+    void PlaySFX()
+    {
+        if (sfxKakaBirak && asrc)
+            asrc.PlayOneShot(sfxKakaBirak, sfxSes);
     }
 }

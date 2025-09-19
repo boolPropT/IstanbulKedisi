@@ -11,6 +11,7 @@ public class KilcikGanimet : MonoBehaviour
     public float bobHiz = 2.5f;     // salinim hizi
     public float donmeHizi = 45f;   // derece/sn
 
+
     Vector3 baslangicPos;
 
     void Awake()
@@ -30,7 +31,11 @@ public class KilcikGanimet : MonoBehaviour
     {
         if (!other.CompareTag("Kedi")) return;
 
+        
         SkorYoneticisi.Instance?.Ekle(puan);
         Destroy(gameObject);
+        
     }
+
+    
 }

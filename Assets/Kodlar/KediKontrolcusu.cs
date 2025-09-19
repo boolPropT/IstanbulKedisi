@@ -7,7 +7,12 @@ public class KediKontrolcusu : MonoBehaviour
     public Transform atisNoktasi;
     [SerializeField] float atisCikisMesafesi = 0.35f;
     public GameObject mermiPrefab;
-    
+
+    [Header("Ses")]
+    public AudioClip sfxAtesEt;     // short "puff" sound
+    public float sfxSes = 0.8f;
+    AudioSource asrc;
+
     Rigidbody2D rb;
     Vector2 hareket;
     Camera cam;
@@ -15,6 +20,11 @@ public class KediKontrolcusu : MonoBehaviour
 
     void Awake()
     {
+        asrc = GetComponent<AudioSource>();
+        if (!asrc) asrc = gameObject.AddComponent<AudioSource>();
+        asrc.playOnAwake = false;
+        asrc.spatialBlend = 0f;
+
         rb = GetComponent<Rigidbody2D>();
         cam = Camera.main;
         sr = GetComponent<SpriteRenderer>();
@@ -39,6 +49,7 @@ public class KediKontrolcusu : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             AtesEt();
+            PlaySFX();
         }
 
         //kediyi sola saða döndürme
@@ -67,5 +78,11 @@ public class KediKontrolcusu : MonoBehaviour
 
         if (go.TryGetComponent(out Mermi m)) m.Firlat(dir);
 
+    }
+
+    void PlaySFX()
+    {
+        if (sfxAtesEt && asrc)
+            asrc.PlayOneShot(sfxAtesEt, sfxSes);
     }
 }

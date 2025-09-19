@@ -1,9 +1,7 @@
-// OdulEkrani.cs (v3 - SkorYoneticisi entegrasyonu + sade UI)
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System;
-using System.Reflection;
 
 public class OdulEkrani : MonoBehaviour
 {
@@ -19,8 +17,8 @@ public class OdulEkrani : MonoBehaviour
     public int costBigBomb = 20;
 
     [Header("Targets")]
-    public KedininCani kediCan;
-    public SimitBombasi simit;
+    public KedininCani kediCan;     // kedinin can scripti
+    public SimitBombasi simit;      // tek kullanýmlýk bomba
 
     [Header("Health Cap")]
     public int kediMaxCanGuess = 0;
@@ -29,10 +27,7 @@ public class OdulEkrani : MonoBehaviour
     float prevTimeScale = 1f;
     int kediMaxCanCache = 0;
 
-    // SkorYoneticisi yumuþak bað alanlarý
-    object skorSingle; Type skorType;
-    MemberInfo kilcikMember;     // alan ya da property
-    MethodInfo spendMethod;      // Harca/Spend türevleri
+    SkorYoneticisi skor;            // <<< doðrudan referans
 
     void Awake()
     {
@@ -46,15 +41,26 @@ public class OdulEkrani : MonoBehaviour
 
     void OnEnable()
     {
-        BindSkorYoneticisi();
+        // Oto-baðla: Inspector boþsa sahneden bul
+        if (!kediCan) kediCan = FindObjectOfType<KedininCani>(true);
+        skor = SkorYoneticisi.Instance ?? FindObjectOfType<SkorYoneticisi>(true);
         Refresh();
+    }
+
+    // +5 Can satýn alýnca GÖZLE görülür teyit için küçük bir flash tetikleyelim
+    IEnumerator CanFlash()
+    {
+        // Bar/metin sistemini bilmiyorum; ama kedinin üstünde kýsa bir “+5” popup istersen burada üretirsin.
+        // Þimdilik sadece bir log:
+        Debug.Log("[Shop] +5 Can uygulandý. Yeni can: " + kediCan.can);
+        yield break;
     }
 
     void Update()
     {
         if (!open) return;
 
-        // Kýsayollar (UI bozulsa bile çýk/satýn al)
+        // Eski input kýsayollarý
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             ContinueGame();
         if (Input.GetKeyDown(KeyCode.Alpha1)) BuyHeal5();
@@ -63,7 +69,6 @@ public class OdulEkrani : MonoBehaviour
         if (kilcikText) kilcikText.text = $"Kýlçýk: {GetKilcik()}";
     }
 
-    // --- Open(): Yeni EventSystem ekleme yok, sadece paneli görünür/etkileþimli yap ---
     public void Open()
     {
         if (open) return;
@@ -72,20 +77,20 @@ public class OdulEkrani : MonoBehaviour
         if (kediCan != null && kediMaxCanCache == 0)
             kediMaxCanCache = (kediMaxCanGuess > 0) ? kediMaxCanGuess : Mathf.Max(kediCan.can, 1);
 
-        EnsureUsableCanvas();   // sadece Canvas/CanvasGroup ayarý, EventSystem’a dokunmuyor
+        EnsureUsableCanvas();
         Refresh();
         rootPanel.SetActive(true);
 
         prevTimeScale = Time.timeScale;
-        Time.timeScale = 0f;    // oyunu dondur
+        Time.timeScale = 0f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
+        // Varsayýlan seçili buton
         if (btnHeal5 && btnHeal5.interactable) btnHeal5.Select();
         else if (btnBigBomb && btnBigBomb.interactable) btnBigBomb.Select();
         else if (btnContinue) btnContinue.Select();
     }
-
 
     public void Close()
     {
@@ -97,7 +102,6 @@ public class OdulEkrani : MonoBehaviour
 
     public bool IsOpen() => open;
 
-    // ---------- UI / Economy ----------
     void Refresh()
     {
         int elde = GetKilcik();
@@ -108,14 +112,23 @@ public class OdulEkrani : MonoBehaviour
         if (btnBigBomb) btnBigBomb.interactable = (elde >= costBigBomb) && (simit != null);
     }
 
+    int GetKilcik() => skor ? skor.SkorSayisi : 0;
+
+    bool TrySpend(int miktar) => skor && skor.Harca(miktar);
+
     void BuyHeal5()
     {
         if (!open || kediCan == null || kediCan.can <= 0) return;
         if (!TrySpend(costHeal5)) return;
 
-        int max = (kediMaxCanCache > 0) ? kediMaxCanCache : int.MaxValue;
-        kediCan.can = Mathf.Min(max, kediCan.can + 5);
+        kediCan.Iyilestir(5);    // direkt alan set etmeyi býrak
         Refresh();
+    }
+
+    IEnumerator DelayWriteCan(int hedef)
+    {
+        yield return null; // bir frame bekle
+        if (kediCan) kediCan.can = hedef;
     }
 
     void BuyBigBomb()
@@ -123,118 +136,15 @@ public class OdulEkrani : MonoBehaviour
         if (!open || simit == null) return;
         if (!TrySpend(costBigBomb)) return;
 
-        simit.superCharges += 1;
+        simit.superCharges += 1; // tek kullanýmlýk
         Refresh();
     }
 
     void ContinueGame() => Close();
 
-    // ---------- SkorYoneticisi entegrasyonu ----------
-    void BindSkorYoneticisi()
-    {
-        skorSingle = null; skorType = null; kilcikMember = null; spendMethod = null;
-
-        // Türü bul
-        skorType = Type.GetType("SkorYoneticisi") ?? Type.GetType("SkorYonetici");
-        if (skorType == null)
-        {
-            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                skorType = asm.GetType("SkorYoneticisi") ?? asm.GetType("SkorYonetici");
-                if (skorType != null) break;
-            }
-        }
-        if (skorType == null) return;
-
-        // Singleton/instance
-        var pI = skorType.GetProperty("I", BindingFlags.Public | BindingFlags.Static);
-        var pInstance = skorType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
-        skorSingle = pI?.GetValue(null) ?? pInstance?.GetValue(null);
-        if (skorSingle == null)
-        {
-            // Sahnedeki örneði bul
-            var find = typeof(UnityEngine.Object).GetMethod("FindObjectOfType", 1, Type.EmptyTypes);
-            var gen = find.MakeGenericMethod(skorType);
-            skorSingle = gen.Invoke(null, null);
-        }
-        if (skorSingle == null) return;
-
-        // Kýlçýk alan/özellik adaylarý
-        string[] kilcikNames = { "kilcik", "kilcikSayisi", "kilcikToplam", "toplamKilcik", "skor", "score", "toplamSkor" };
-        foreach (var name in kilcikNames)
-        {
-            var pi = skorType.GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
-            if (pi != null && (pi.PropertyType == typeof(int))) { kilcikMember = pi; break; }
-            var fi = skorType.GetField(name, BindingFlags.Public | BindingFlags.Instance);
-            if (fi != null && (fi.FieldType == typeof(int))) { kilcikMember = fi; break; }
-        }
-
-        // Harcama metodu adaylarý
-        string[] spendNames = { "HarcaKilcik", "Harca", "Spend", "SpendKilcik" };
-        foreach (var name in spendNames)
-        {
-            var mi = skorType.GetMethod(name, BindingFlags.Public | BindingFlags.Instance, null, new[] { typeof(int) }, null);
-            if (mi != null) { spendMethod = mi; break; }
-        }
-    }
-
-    int GetKilcik()
-    {
-        if (skorSingle == null || kilcikMember == null) return 0;
-
-        try
-        {
-            if (kilcikMember is PropertyInfo pi) return (int)pi.GetValue(skorSingle);
-            if (kilcikMember is FieldInfo fi) return (int)fi.GetValue(skorSingle);
-        }
-        catch { }
-        return 0;
-    }
-
-    bool TrySpend(int miktar)
-    {
-        if (skorSingle == null) return false;
-
-        // Tercihen metot çaðýr
-        if (spendMethod != null)
-        {
-            try
-            {
-                var ok = spendMethod.Invoke(skorSingle, new object[] { miktar });
-                if (ok is bool b) return b;
-            }
-            catch { }
-        }
-
-        // Fallback: sayacý düþür (yazýlabilir alan/propery ise)
-        int mevcut = GetKilcik();
-        if (mevcut < miktar) return false;
-
-        try
-        {
-            if (kilcikMember is PropertyInfo pi && pi.CanWrite)
-            {
-                pi.SetValue(skorSingle, mevcut - miktar);
-                return true;
-            }
-            if (kilcikMember is FieldInfo fi && !fi.IsInitOnly)
-            {
-                fi.SetValue(skorSingle, mevcut - miktar);
-                return true;
-            }
-        }
-        catch { }
-
-        return false;
-    }
-
-    // ---------- UI yardýmcýlarý (yumuþak) ----------
-    // --- EnsureUsableCanvas(): sadece görünürlük ve raycast, input modülüne KARÞAMAYIZ ---
+    // Sadece görünür/týklanýr hale getir; EventSystem’a dokunma
     void EnsureUsableCanvas()
     {
-        if (!rootPanel) rootPanel = gameObject;
-
-        // 1) Parent zincirini aç
         var t = rootPanel.transform;
         while (t != null)
         {
@@ -242,25 +152,18 @@ public class OdulEkrani : MonoBehaviour
             t = t.parent;
         }
 
-        // 2) Canvas ayarý (Overlay önerilir; Camera/WorldSpace ise kamera ata)
         var cv = rootPanel.GetComponentInParent<Canvas>(true);
         if (cv != null)
         {
             cv.enabled = true;
             if (cv.renderMode == RenderMode.ScreenSpaceCamera && cv.worldCamera == null)
                 cv.worldCamera = Camera.main;
-            // sortingOrder’ý zorla 9999 yapmýyoruz; mevcut UI hiyerarþin bozulmasýn.
         }
 
-        // 3) CanvasGroup ayarý: görünür ve týklanýr olsun
         var cg = rootPanel.GetComponent<CanvasGroup>();
         if (cg == null) cg = rootPanel.AddComponent<CanvasGroup>();
         cg.alpha = 1f;
         cg.blocksRaycasts = true;
         cg.interactable = true;
-
-        // 4) Arka planý engel yapma:
-        // Shop arkasý karartma imajýnda "Raycast Target" açýk kalabilir,
-        // ama butonlarýn üzerinde ikinci, görünmez bir imaj varsa Raycast Target'ýný kapat.
     }
 }

@@ -52,6 +52,12 @@ public class CrosshairKontrolcusu : MonoBehaviour
         baseScale = transform.localScale;
 
         SetSprite(normalSprite);
+
+        if (mode == Mode.UI && uiImage != null)
+        {
+            uiImage.raycastTarget = false;                  // butonlarýn üstünde durabilir ama týklamayý YEMEZ
+            
+        }
     }
 
     void OnEnable() { if (hideSystemCursor) Cursor.visible = false; }
